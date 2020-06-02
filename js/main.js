@@ -102,13 +102,13 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
     }
 
     function restartPlay(){
-        tablePlayer.restartTablePlayer();
+        tablePlayer.restartTable();
         itemsPlayer.forEach((item) => {
             item.addEventListener('click', onItemPlayerClick);
             item.style.setProperty('--cursor', 'pointer');
             item.style.setProperty('--background-color', colorItem);
         });
-        tableAI.restartTableAI();
+        tableAI.restartTable();
         itemsAI.forEach((item) => {
             item.removeEventListener('click', onItemAIClick);
             item.style.setProperty('--cursor', 'default');
@@ -130,6 +130,6 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
             item.style.setProperty('--cursor', 'pointer');
         });
         //заполняем игровое поле II
-        tableAI.createTableAI(tablePlayer);
+        tableAI.createTableAI(tablePlayer.getTable());
     };
 });
