@@ -4,7 +4,7 @@ function(Component, Header, ViewPlay) {
      * класс страницы
      */
     class Page extends Component {
-        render({hint}) {
+        render({hint, button_text}) {
             return `
                 <div class="wraper">
                     ${this.childrens.create(Header, {
@@ -12,7 +12,7 @@ function(Component, Header, ViewPlay) {
                     })}
                     ${this.childrens.create(ViewPlay)}
                     <div class="management">
-                        <button class="start-button" name="playButton">Начать игру</button>
+                        <button class="start-button" name="playButton">${button_text}</button>
                     </div>
                 </div>`;
         }
