@@ -1,13 +1,18 @@
 'use strict';
 
-define(['js/Render/Page.js', 'js/Base/Component.js', 'js/Play/TablePlayer.js', 'js/Play/TableAI.js'],
-function(Page, Component, TablePlayer, TableAI) {
+define(['js/Render/Page.js', 'js/Base/Component.js', 'js/Base/TableFactory.js', 'js/Play/TablePlayer.js', 'js/Play/TableAI.js'],
+function(Page, Component, TableFactory, TablePlayer, TableAI) {
 
     let colorShip = '#CD5C5C';
     let colorItem = '#73c7e0';
 
     //флаг начала игры занаво
     let restart = false;
+
+    const tableFactory = new TableFactory();
+
+    let tablePlayer = tableFactory.createTablePlayer();
+    let tableAI = tableFactory.createTableAI();
 
     Component.prototype.generateId = function() {
         return Math.random().toString(32).slice(2);
@@ -34,11 +39,6 @@ function(Page, Component, TablePlayer, TableAI) {
     playButton[0].addEventListener('click', onStartButtonClick);
 
     let hint = document.getElementById('hint');
-
-    //создадим поле игрока
-    let tablePlayer = new TablePlayer();
-    //создаем поле ИИ
-    let tableAI = new TableAI();
 
     /**
      * Обработчик клика на поле игрока
