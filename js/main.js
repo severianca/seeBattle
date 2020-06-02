@@ -3,6 +3,9 @@
 define(['js/Render/Page.js', 'js/Base/Component.js'],
 function(Page, Component) {
 
+    let colorShip = '#CD5C5C';
+    let colorItem = '#73c7e0';
+
     Component.prototype.generateId = function() {
         return Math.random().toString(32).slice(2);
         };
@@ -25,12 +28,26 @@ function(Page, Component) {
 
     let hint = document.getElementById('hint');
 
+    //создадим поле игрока
+    let tablePlayer = new TablePlayer();
+    //создаем поле ИИ
+    let tableAI = new TableAI();
+
     /**
      * Обработчик клика на поле игрока
      * @param {mouseEvent} event 
      */
     function onItemPlayerClick(event) {
+        // определим на какой элемент поля кликнули
+        let idItemClick = event.currentTarget.id;
+        let currentItemClick = document.getElementById(idItemClick);
 
+        if (tablePlayer.canAddShip(idItemClick)) {
+            currentItemClick.style.setProperty('--background-color', colorShip);
+        }
+        else {
+            currentItemClick.style.setProperty('--background-color', colorItem);
+        }
     }
 
     /**
