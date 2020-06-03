@@ -214,92 +214,87 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
         //значит что в прошлый раз ИИ не добил корабль
         else {
             //ищем куда сходить
-            if (lastI != 0){
-                //если не верхняя горизонтальная строка, то проверим стреляли ли мы туда
-                if (tablePlayer.checkShot(lastI-1, lastJ)){
-                    //если мы не ходили в эту клеточку, то ходим
-                    if (tablePlayer.shot(lastI-1, lastJ)){
-                        //если действия ИИ закончились успехом, то ИИ ходит ещё
-                        //но прежде запомним новый успешный ход
-                        lastI = lastI-1;
-                        //и покрасим клеточку
-                        tablePlayer.paintItemGet(lastI, lastJ);
-                        if (tablePlayer.checkKill(lastI, lastJ)){
-                            lastI = -1;
-                            lastJ = -1;
-                        }
-                        actionAI();
+            //если не верхняя горизонтальная строка, и не стреля ли уже в поле сверху
+            if (lastI != 0 && lastI != -1 && tablePlayer.checkShot(lastI-1, lastJ)){
+                //то делаем выстрел
+                if (tablePlayer.shot(lastI-1, lastJ)){
+                    //если действия ИИ закончились успехом, то ИИ ходит ещё
+                    //но прежде запомним новый успешный ход
+                    lastI = lastI-1;
+                    //и покрасим клеточку
+                    tablePlayer.paintItemGet(lastI, lastJ);
+                    if (tablePlayer.checkKill(lastI, lastJ)){
+                        lastI = -1;
+                        lastJ = -1;
                     }
-                    else {
-                        //ход завершен
-                        //поле окрашивается в цвет поражения...
-                        tablePlayer.paintItemMiss(lastI-1, lastJ);
-                        hint.innerHTML="Твой ход";
-                        return;
-                    }
+                    actionAI();
+                }
+                else {
+                    //ход завершен
+                    //поле окрашивается в цвет поражения...
+                    tablePlayer.paintItemMiss(lastI-1, lastJ);
+                    hint.innerHTML="Твой ход";
+                    return;
                 }
             }
-            if (lastJ != 9){
-                //если не самый правый столбец, то проверим стреляли ли мы туда
-                if (tablePlayer.checkShot(lastI, lastJ+1)) {
-                    if (tablePlayer.shot(lastI, lastJ+1)) {
-                        lastJ = lastJ+1;
-                        //и покрасим клеточку
-                        tablePlayer.paintItemGet(lastI, lastJ);
-                        if (tablePlayer.checkKill(lastI, lastJ)){
-                            lastI = -1;
-                            lastJ = -1;
-                        }
-                        actionAI();
+
+            if (lastI != 9 && lastI != -1 && tablePlayer.checkShot(lastI+1, lastJ)){
+                if (tablePlayer.shot(lastI+1, lastJ)) {
+                    lastI = lastI+1;
+                    //и покрасим клеточку
+                    tablePlayer.paintItemGet(lastI, lastJ);
+                    //проверяем убит ли корабль
+                    //если убит, то сбрасываем lastI и lastJ
+                    if (tablePlayer.checkKill(lastI, lastJ)){
+                        lastI = -1;
+                        lastJ = -1;
                     }
-                    else {
-                        //поле окрашивается в цвет поражения...
-                        tablePlayer.paintItemMiss(lastI, lastJ+1);
-                        hint.innerHTML="Твой ход";
-                        return;
-                    }
+                    actionAI();
+                }
+                else {
+                    //поле окрашивается в цвет поражения...
+                    tablePlayer.paintItemMiss(lastI+1, lastJ);
+                    hint.innerHTML="Твой ход";
+                    return;
                 }
             }
-            if (lastI != 9){
-                if (tablePlayer.checkShot(lastI+1, lastJ)) {
-                    if (tablePlayer.shot(lastI+1, lastJ)) {
-                        lastI = lastI+1;
-                        //и покрасим клеточку
-                        tablePlayer.paintItemGet(lastI, lastJ);
-                        //проверяем убит ли корабль
-                        //если убит, то сбрасываем lastI и lastJ
-                        if (tablePlayer.checkKill(lastI, lastJ)){
-                            lastI = -1;
-                            lastJ = -1;
-                        }
-                        actionAI();
+
+            //если не самый правый столбец, и не стреля ли уже в поле справа
+            if (lastJ != 9 && lastJ != -1 && tablePlayer.checkShot(lastI, lastJ+1)){
+                if (tablePlayer.shot(lastI, lastJ+1)) {
+                    lastJ = lastJ+1;
+                    //и покрасим клеточку
+                    tablePlayer.paintItemGet(lastI, lastJ);
+                    if (tablePlayer.checkKill(lastI, lastJ)){
+                        lastI = -1;
+                        lastJ = -1;
                     }
-                    else {
-                        //поле окрашивается в цвет поражения...
-                        tablePlayer.paintItemMiss(lastI+1, lastJ);
-                        hint.innerHTML="Твой ход";
-                        return;
-                    }
+                    actionAI();
+                }
+                else {
+                    //поле окрашивается в цвет поражения...
+                    tablePlayer.paintItemMiss(lastI, lastJ+1);
+                    hint.innerHTML="Твой ход";
+                    return;
                 }
             }
-            if (lastJ != 0){
-                if (tablePlayer.checkShot(lastI, lastJ-1)){
-                    if (tablePlayer.shot(lastI, lastJ-1)){
-                        lastJ = lastJ-1;
-                        //и покрасим клеточку
-                        tablePlayer.paintItemGet(lastI, lastJ);
-                        if (tablePlayer.checkKill(lastI, lastJ)){
-                            lastI = -1;
-                            lastJ = -1;
-                        }
-                        actionAI();
+
+            if (lastJ != 0 && lastJ != -1 && tablePlayer.checkShot(lastI, lastJ-1)){
+                if (tablePlayer.shot(lastI, lastJ-1)){
+                    lastJ = lastJ-1;
+                    //и покрасим клеточку
+                    tablePlayer.paintItemGet(lastI, lastJ);
+                    if (tablePlayer.checkKill(lastI, lastJ)){
+                        lastI = -1;
+                        lastJ = -1;
                     }
-                    else {
-                        //поле окрашивается в цвет поражения...
-                        tablePlayer.paintItemMiss(lastI, lastJ-1);
-                        hint.innerHTML="Твой ход";
-                        return;
-                    }
+                    actionAI();
+                }
+                else {
+                    //поле окрашивается в цвет поражения...
+                    tablePlayer.paintItemMiss(lastI, lastJ-1);
+                    hint.innerHTML="Твой ход";
+                    return;
                 }
             }
         }

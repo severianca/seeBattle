@@ -142,8 +142,8 @@ function(Table){
         */
         paintItemMiss(i, j){
             let id = i+"_"+j+"_"+"player";
-            let currentItemAIAction = document.getElementById(id);
-            currentItemAIAction.style.setProperty('--background-color', '#000000');
+            let currentItemPlayerAction = document.getElementById(id);
+            currentItemPlayerAction.style.setProperty('--background-color', '#000000');
         }
 
         /**
@@ -151,8 +151,8 @@ function(Table){
         */
         paintItemGet(i, j){
             let id = i+"_"+j+"_"+"player";
-            let currentItemAIAction = document.getElementById(id);
-            currentItemAIAction.style.setProperty('--background-color', '#FF0000');
+            let currentItemPlayerAction = document.getElementById(id);
+            currentItemPlayerAction.style.setProperty('--background-color', '#FF0000');
         }
 
     }
