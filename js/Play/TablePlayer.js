@@ -14,7 +14,7 @@ function(Table){
         * Возращает true, если в этом поле нет корабля
         * Возвращает false, если корабль уже здесь стоит
         */
-       canAddShip(item) {
+        canAddShip(item) {
             //определяем поле по которому кликнул игрок
             let i = item[0];
             let j = item[2];
@@ -124,9 +124,36 @@ function(Table){
             }
         }
 
+        /**
+        * Возращает true, если в это поле ИИ уже стрелял
+        * Возвращает false, в противном случае
+        */
+        checkShot(i, j){
+            if (this.table[i][j] == -1){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
 
+        /**
+        * i,j - координаты поля, которое нужно окрасить в цвет "промах"
+        */
+        paintItemMiss(i, j){
+            let id = i+"_"+j+"_"+"player";
+            let currentItemAIAction = document.getElementById(id);
+            currentItemAIAction.style.setProperty('--background-color', '#000000');
+        }
 
-
+        /**
+        * i,j - координаты поля, которое нужно окрасить в цвет "попал"
+        */
+        paintItemGet(i, j){
+            let id = i+"_"+j+"_"+"player";
+            let currentItemAIAction = document.getElementById(id);
+            currentItemAIAction.style.setProperty('--background-color', '#FF0000');
+        }
 
     }
     return TablePlayer;

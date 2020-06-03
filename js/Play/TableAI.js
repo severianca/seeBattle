@@ -10,6 +10,10 @@ function(Table){
             }
         }
 
+        getItem(i, j){
+            return this.table[i][j];
+        }
+
     }
     return TableAI;
 });

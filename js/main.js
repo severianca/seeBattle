@@ -40,6 +40,10 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
 
     let hint = document.getElementById('hint');
 
+    //последний ход ИИ
+    let lastI = -1;
+    let lastJ = -1;
+
     /**
      * Обработчик клика на поле игрока
      * @param {mouseEvent} event 
@@ -64,6 +68,7 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
     function onStartButtonClick(event) {
         if (restart){
             restartPlay();
+            restart = false;
             return;
         }
         else {
@@ -98,7 +103,7 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
         let i = Number(idItemAIClick[0]);
         let j = Number(idItemAIClick[2]);
         let currentItemAIClick = document.getElementById(idItemAIClick);
-        //play(i, j, currentItemAIClick);
+        shotPlayer(i, j, currentItemAIClick);
     }
 
     function restartPlay(){
@@ -129,7 +134,182 @@ function(Page, Component, TableFactory, TablePlayer, TableAI) {
             item.addEventListener('click', onItemAIClick);
             item.style.setProperty('--cursor', 'pointer');
         });
-        //заполняем игровое поле II
+        //заполняем игровое поле AI
         tableAI.createTableAI(tablePlayer.getTable());
-    };
+    }
+
+    /**
+    * i, j - координаты, которыми сходил игрок
+    * currentItemAIClick - поле по которому кликнул игрок
+    */
+   function shotPlayer(i, j, currentItemAIClick){
+    if (tableAI.shot(i, j)){
+        currentItemAIClick.style.setProperty('--background-color', '#FF0000');
+        if(tableAI.checkKill(i, j)){
+            hint.innerHTML="Убил";
+        }
+        else {
+            hint.innerHTML="Ранил";
+        }
+    }
+    else {
+        currentItemAIClick.style.setProperty('--background-color', '#000000');
+        hint.innerHTML="Мимо. Ход ИИ";
+        actionAI();
+    }
+    if (tableAI.getCountShips()==0){
+        hint.innerHTML="Победа!";
+        endPlay();
+    }
+    if (tablePlayer.getCountShips()==0){
+        hint.innerHTML="Поражение";
+        endPlay();
+    }
+}
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+    * ход искусственного интеллекта
+    */
+    function actionAI(){
+        let i, j;
+        if (lastI == -1 && lastJ == -1){
+            i = getRandomInt(0,9);
+            j = getRandomInt(0,9);
+            while (tablePlayer.getItem(i, j) == -1){
+                i = getRandomInt(0,9);
+                j = getRandomInt(0,9);
+            }
+            if (!tablePlayer.shot(i, j)){
+                //в таком случае ход ИИ окончен
+                //поле окрашивается в цвет поражения...
+                tablePlayer.paintItemMiss(i, j);
+                hint.innerHTML="Твой ход";
+                return;
+            }
+            //значит мы попали в корабль
+            else{
+                //это поле окрашивается
+                tablePlayer.paintItemGet(i, j);
+                //проверяется убили или ранили
+                if (tablePlayer.checkKill(i, j)){
+                    //сбрасываем lastI lastJ
+                    lastI = -1;
+                    lastJ = -1;
+                    //и продолжаем ход
+                    actionAI();
+                }
+                else {
+                    //если ранили запоминаем ход ИИ
+                    lastI = i;
+                    lastJ = j;
+                    //делаем новый ход
+                    actionAI();
+                }
+            }
+        }
+        //значит что в прошлый раз ИИ не добил корабль
+        else {
+            //ищем куда сходить
+            if (lastI != 0){
+                //если не верхняя горизонтальная строка, то проверим стреляли ли мы туда
+                if (tablePlayer.checkShot(lastI-1, lastJ)){
+                    //если мы не ходили в эту клеточку, то ходим
+                    if (tablePlayer.shot(lastI-1, lastJ)){
+                        //если действия ИИ закончились успехом, то ИИ ходит ещё
+                        //но прежде запомним новый успешный ход
+                        lastI = lastI-1;
+                        //и покрасим клеточку
+                        tablePlayer.paintItemGet(lastI, lastJ);
+                        if (tablePlayer.checkKill(lastI, lastJ)){
+                            lastI = -1;
+                            lastJ = -1;
+                        }
+                        actionAI();
+                    }
+                    else {
+                        //ход завершен
+                        //поле окрашивается в цвет поражения...
+                        tablePlayer.paintItemMiss(lastI-1, lastJ);
+                        hint.innerHTML="Твой ход";
+                        return;
+                    }
+                }
+            }
+            if (lastJ != 9){
+                //если не самый правый столбец, то проверим стреляли ли мы туда
+                if (tablePlayer.checkShot(lastI, lastJ+1)) {
+                    if (tablePlayer.shot(lastI, lastJ+1)) {
+                        lastJ = lastJ+1;
+                        //и покрасим клеточку
+                        tablePlayer.paintItemGet(lastI, lastJ);
+                        if (tablePlayer.checkKill(lastI, lastJ)){
+                            lastI = -1;
+                            lastJ = -1;
+                        }
+                        actionAI();
+                    }
+                    else {
+                        //поле окрашивается в цвет поражения...
+                        tablePlayer.paintItemMiss(lastI, lastJ+1);
+                        hint.innerHTML="Твой ход";
+                        return;
+                    }
+                }
+            }
+            if (lastI != 9){
+                if (tablePlayer.checkShot(lastI+1, lastJ)) {
+                    if (tablePlayer.shot(lastI+1, lastJ)) {
+                        lastI = lastI+1;
+                        //и покрасим клеточку
+                        tablePlayer.paintItemGet(lastI, lastJ);
+                        //проверяем убит ли корабль
+                        //если убит, то сбрасываем lastI и lastJ
+                        if (tablePlayer.checkKill(lastI, lastJ)){
+                            lastI = -1;
+                            lastJ = -1;
+                        }
+                        actionAI();
+                    }
+                    else {
+                        //поле окрашивается в цвет поражения...
+                        tablePlayer.paintItemMiss(lastI+1, lastJ);
+                        hint.innerHTML="Твой ход";
+                        return;
+                    }
+                }
+            }
+            if (lastJ != 0){
+                if (tablePlayer.checkShot(lastI, lastJ-1)){
+                    if (tablePlayer.shot(lastI, lastJ-1)){
+                        lastJ = lastJ-1;
+                        //и покрасим клеточку
+                        tablePlayer.paintItemGet(lastI, lastJ);
+                        if (tablePlayer.checkKill(lastI, lastJ)){
+                            lastI = -1;
+                            lastJ = -1;
+                        }
+                        actionAI();
+                    }
+                    else {
+                        //поле окрашивается в цвет поражения...
+                        tablePlayer.paintItemMiss(lastI, lastJ-1);
+                        hint.innerHTML="Твой ход";
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    function endPlay(){
+        //удаляем обработчик клика на поле ИИ, удаляем pointer курсор
+        itemsAI.forEach((item) => {
+            item.removeEventListener('click', onItemAIClick);
+            item.style.setProperty('--cursor', 'default');
+        });
+    }
 });
